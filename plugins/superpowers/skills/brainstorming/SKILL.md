@@ -13,6 +13,29 @@ Start by understanding the current project context, then ask questions one at a 
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool to ask the user questions.** Present a carousel UI rather than plain text options.
+
+For each question:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions — they are easier to answer
+
+This requirement applies to ALL interactive pauses, not just “questions”, including:
+- Waiting for user consent (e.g., Visual Companion offer)
+- Design section-by-section approval gates
+- Spec review gates (“approve / request changes / not ready”)
+- Any “continue / proceed / confirm” moment
+
+Never wait for bare text responses (e.g., “ok”, “continue”, “yes”). If the user provides freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
+**Execution Flow (Non-blocking)**
+
+This skill shall not stop and wait for bare text confirmation at each step during execution. The agent shall continue to advance according to the process; interactive pauses shall only be initiated when user decision, confirmation, or input is genuinely required. All such pauses must be implemented via `vscode/askQuestions` (or an equivalent tool specified in the documentation) — after the tool is used to display a selection or input interface, the agent may resume executing subsequent steps upon receiving the user's response. Do not use modes that rely solely on textual prompts such as "Please continue" or passive waiting.
+
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
 Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
@@ -25,10 +48,10 @@ You MUST create a task for each of these items and complete them in order:
 2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
-5. **Present design** — in sections scaled to their complexity, get user approval after each section
+5. **Present design** — in sections scaled to their complexity, get user approval after each section via `vscode/askQuestions`
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec review loop** — dispatch spec-document-reviewer subagent with precisely crafted review context (never your session history); fix issues and re-dispatch until approved (max 5 iterations, then surface to human)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
+8. **User reviews written spec** — ask user to review the spec file before proceeding via `vscode/askQuestions`
 9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
@@ -76,7 +99,7 @@ digraph brainstorming {
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
 - For appropriately-scoped projects, ask questions one at a time to refine the idea
-- Prefer multiple choice questions when possible, but open-ended is fine too
+- Prefer multiple choice questions when possible; if an open-ended input is needed, still use `vscode/askQuestions` with freeform input enabled
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
 
@@ -90,7 +113,7 @@ digraph brainstorming {
 
 - Once you believe you understand what you're building, present the design
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
-- Ask after each section whether it looks right so far
+- Ask after each section whether it looks right so far via `vscode/askQuestions` (e.g., “Looks good — continue”, “Needs changes”, “Unsure — ask a clarifying question”)
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
 
@@ -128,7 +151,12 @@ After the spec review loop passes, ask the user to review the written spec befor
 
 > "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+This is an interactive gate and MUST be implemented via `vscode/askQuestions` (not bare text waiting). Provide 2-4 options such as:
+- “Approved — proceed to implementation plan”
+- “Request changes”
+- “Not ready to review yet”
+
+Only proceed once the user selects an approval option in `vscode/askQuestions`. If they request changes, make them and re-run the spec review loop.
 
 **Implementation:**
 
@@ -151,7 +179,9 @@ A browser-based companion for showing mockups, diagrams, and visual options duri
 **Offering the companion:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer it once for consent:
 > "Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)"
 
-**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
+**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content.
+
+Because this is user consent, it MUST be collected via `vscode/askQuestions` (not bare text waiting). Use 2-3 options (e.g., “Yes, use Visual Companion”, “No, text-only”). After the user selects an option, continue accordingly. If they decline, proceed with text-only brainstorming.
 
 **Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
 
