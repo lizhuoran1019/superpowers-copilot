@@ -13,6 +13,28 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool for all user-facing decisions and confirmations.** Present structured options rather than freeform prompts.
+
+For each interaction:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions
+
+This applies to ALL interactive pauses, including:
+- Confirming the base branch when auto-detection is uncertain
+- Choosing the completion workflow
+- Confirming destructive discard actions
+
+Never wait for bare text responses such as "ok", "continue", "yes", or typed confirmation keywords. If the user replies in freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
+**Execution Flow (Non-blocking)**
+
+Do not pause for plain-text confirmation. Stop only when a real user decision is required, and collect it via `vscode/askQuestions`.
+
 ## The Process
 
 ### Step 1: Verify Tests
@@ -44,22 +66,18 @@ Stop. Don't proceed to Step 2.
 git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 ```
 
-Or ask: "This branch split from main - is that correct?"
+If auto-detection is uncertain, ask via `vscode/askQuestions` with options such as:
+- `main`
+- `master`
+- `Other / need to specify`
 
 ### Step 3: Present Options
 
-Present exactly these 4 options:
-
-```
-Implementation complete. What would you like to do?
-
-1. Merge back to <base-branch> locally
-2. Push and create a Pull Request
-3. Keep the branch as-is (I'll handle it later)
-4. Discard this work
-
-Which option?
-```
+Present exactly these 4 options via `vscode/askQuestions`:
+- `Merge back to <base-branch> locally`
+- `Push and create a Pull Request`
+- `Keep the branch as-is`
+- `Discard this work`
 
 **Don't add explanation** - keep options concise.
 
@@ -113,17 +131,9 @@ Report: "Keeping branch <name>. Worktree preserved at <path>."
 
 #### Option 4: Discard
 
-**Confirm first:**
-```
-This will permanently delete:
-- Branch <name>
-- All commits: <commit-list>
-- Worktree at <path>
-
-Type 'discard' to confirm.
-```
-
-Wait for exact confirmation.
+**Confirm first via `vscode/askQuestions`:**
+- `Discard branch and worktree permanently`
+- `Cancel`
 
 If confirmed:
 ```bash
@@ -135,7 +145,7 @@ Then: Cleanup worktree (Step 5)
 
 ### Step 5: Cleanup Worktree
 
-**For Options 1, 2, 4:**
+**For Options 1 and 4:**
 
 Check if in worktree:
 ```bash
@@ -166,7 +176,7 @@ git worktree remove <worktree-path>
 
 **Open-ended questions**
 - **Problem:** "What should I do next?" → ambiguous
-- **Fix:** Present exactly 4 structured options
+- **Fix:** Present exactly 4 structured options via `vscode/askQuestions`
 
 **Automatic worktree cleanup**
 - **Problem:** Remove worktree when might need it (Option 2, 3)
@@ -174,7 +184,7 @@ git worktree remove <worktree-path>
 
 **No confirmation for discard**
 - **Problem:** Accidentally delete work
-- **Fix:** Require typed "discard" confirmation
+- **Fix:** Require a dedicated destructive confirmation via `vscode/askQuestions`
 
 ## Red Flags
 
@@ -187,7 +197,7 @@ git worktree remove <worktree-path>
 **Always:**
 - Verify tests before offering options
 - Present exactly 4 options
-- Get typed confirmation for Option 4
+- Get destructive confirmation for Option 4 via `vscode/askQuestions`
 - Clean up worktree for Options 1 & 4 only
 
 ## Integration

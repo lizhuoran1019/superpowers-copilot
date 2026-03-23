@@ -13,6 +13,23 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool whenever you need a human decision about deviating from TDD.** Do not rely on bare text prompts.
+
+For each interaction:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions
+
+This applies to ALL interactive pauses involving the human, including:
+- Exception requests for throwaway prototypes, generated code, or configuration-only changes
+- Situations where the correct test strategy is unclear and a human decision is required
+
+Never wait for bare text responses such as "ok", "continue", or "yes". If the user replies in freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
 ## When to Use
 
 **Always:**
@@ -21,7 +38,7 @@ Write the test first. Watch it fail. Write minimal code to pass.
 - Refactoring
 - Behavior changes
 
-**Exceptions (ask your human partner):**
+**Exceptions (ask your human partner via `vscode/askQuestions`):**
 - Throwaway prototypes
 - Generated code
 - Configuration files
@@ -343,7 +360,7 @@ Can't check all boxes? You skipped TDD. Start over.
 
 | Problem | Solution |
 |---------|----------|
-| Don't know how to test | Write wished-for API. Write assertion first. Ask your human partner. |
+| Don't know how to test | Write wished-for API. Write assertion first. If a human decision is required, ask via `vscode/askQuestions`. |
 | Test too complicated | Design too complicated. Simplify interface. |
 | Must mock everything | Code too coupled. Use dependency injection. |
 | Test setup huge | Extract helpers. Still complex? Simplify design. |

@@ -13,6 +13,28 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool for any user decision, confirmation, or consent.** Present structured choices rather than bare text prompts.
+
+For each interaction:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions
+
+This applies to ALL interactive pauses, including:
+- Choosing a worktree location
+- Deciding whether to proceed with a failing baseline
+- Any explicit consent or proceed/stop decision
+
+Never wait for bare text responses such as "ok", "continue", or "yes". If the user replies in freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
+**Execution Flow (Non-blocking)**
+
+Do not pause for plain-text confirmation. Only stop when a real user decision is required, and implement that pause via `vscode/askQuestions`.
+
 ## Directory Selection Process
 
 Follow this priority order:
@@ -39,14 +61,9 @@ grep -i "worktree.*director" CLAUDE.md 2>/dev/null
 
 If no directory exists and no CLAUDE.md preference:
 
-```
-No worktree directory found. Where should I create worktrees?
-
-1. .worktrees/ (project-local, hidden)
-2. ~/.config/superpowers/worktrees/<project-name>/ (global location)
-
-Which would you prefer?
-```
+Ask via `vscode/askQuestions` with 2 options:
+- `.worktrees/` (project-local, hidden)
+- `~/.config/superpowers/worktrees/<project-name>/` (global location)
 
 ## Safety Verification
 
@@ -129,7 +146,7 @@ pytest
 go test ./...
 ```
 
-**If tests fail:** Report failures, ask whether to proceed or investigate.
+**If tests fail:** Report failures, then ask via `vscode/askQuestions` whether to investigate first or proceed despite the failing baseline.
 
 **If tests pass:** Report ready.
 
@@ -168,7 +185,7 @@ Ready to implement <feature-name>
 ### Proceeding with failing tests
 
 - **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
+- **Fix:** Report failures, get explicit permission via `vscode/askQuestions`
 
 ### Hardcoding setup commands
 
@@ -196,7 +213,7 @@ Ready to implement auth feature
 **Never:**
 - Create worktree without verifying it's ignored (project-local)
 - Skip baseline test verification
-- Proceed with failing tests without asking
+- Proceed with failing tests without asking via `vscode/askQuestions`
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
 

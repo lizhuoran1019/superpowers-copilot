@@ -11,6 +11,28 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool whenever task execution requires a user decision, clarification, or consent.** Do not rely on plain text prompts.
+
+For each interaction:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions
+
+This applies to ALL interactive pauses involving the human, including:
+- Answering subagent questions that need human input
+- Choosing how to handle blockers or plan issues
+- Granting explicit consent for main/master branch work
+
+Never wait for bare text responses such as "ok", "continue", or "yes". If the user replies in freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
+**Execution Flow (Non-blocking)**
+
+Do not pause for plain-text confirmation. Only stop when a real user decision is required, and collect it via `vscode/askQuestions`.
+
 ## When to Use
 
 ```dot
@@ -108,6 +130,8 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 **DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
 
 **NEEDS_CONTEXT:** The implementer needs information that wasn't provided. Provide the missing context and re-dispatch.
+
+If the missing context requires a human decision, gather it via `vscode/askQuestions` before re-dispatching.
 
 **BLOCKED:** The implementer cannot complete the task. Assess the blocker:
 1. If it's a context problem, provide more context and re-dispatch with the same model
@@ -234,7 +258,7 @@ Done!
 ## Red Flags
 
 **Never:**
-- Start implementation on main/master branch without explicit user consent
+- Start implementation on main/master branch without explicit user consent collected via `vscode/askQuestions`
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
@@ -249,6 +273,7 @@ Done!
 
 **If subagent asks questions:**
 - Answer clearly and completely
+- If an answer depends on human input, collect it via `vscode/askQuestions` first
 - Provide additional context if needed
 - Don't rush them into implementation
 

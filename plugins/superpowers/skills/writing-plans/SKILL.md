@@ -13,6 +13,29 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
+<HARD-GATE>
+## User Interaction
+
+**Use the `#vscode/askQuestions` tool to ask the user questions.** Present a carousel UI rather than plain text options.
+
+For each question:
+- Use askQuestions to present 2-4 options
+- Ask only one question at a time
+- Prefer multiple-choice over open-ended questions - they are easier to answer
+
+This requirement applies to ALL interactive pauses, not just explicit "questions", including:
+- Scope decomposition gates
+- Plan approval or revision gates
+- Execution handoff gates
+- Any "continue / proceed / confirm" moment
+
+Never wait for bare text responses (e.g., "ok", "continue", "yes"). If the user provides freeform text anyway, immediately follow up with `vscode/askQuestions` to collect an explicit choice before proceeding.
+</HARD-GATE>
+
+**Execution Flow (Non-blocking)**
+
+This skill shall not stop and wait for bare text confirmation at each step during execution. The agent shall continue to advance according to the process; interactive pauses shall only be initiated when user decision, confirmation, or input is genuinely required. All such pauses must be implemented via `vscode/askQuestions` (or an equivalent tool specified in the documentation) - after the tool is used to display a selection or input interface, the agent may resume executing subsequent steps upon receiving the user's response. Do not use modes that rely solely on textual prompts such as "Please continue" or passive waiting.
+
 **Context:** This should be run in a dedicated worktree (created by brainstorming skill).
 
 **Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
@@ -21,6 +44,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ## Scope Check
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+
+If user input is needed to decide whether to split scope, collect that decision via `vscode/askQuestions` with clear options such as "Split into multiple plans", "Keep a single plan", or "Need more explanation".
 
 ## File Structure
 
@@ -129,11 +154,22 @@ After completing each chunk of the plan:
 - If loop exceeds 5 iterations, surface to human for guidance
 - Reviewers are advisory - explain disagreements if you believe feedback is incorrect
 
+If a reviewer disagreement or scope tradeoff needs user input, present the decision via `vscode/askQuestions` rather than waiting for a freeform reply.
+
 ## Execution Handoff
 
 After saving the plan:
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Ready to execute?"**
+Ask the user to choose the next step via `vscode/askQuestions` rather than a bare text prompt.
+
+Example prompt text:
+
+> "Plan complete and saved to `docs/superpowers/plans/<filename>.md`. What do you want to do next?"
+
+Provide 2-4 options such as:
+- "Proceed with execution"
+- "Request plan changes"
+- "Not ready to execute yet"
 
 **Execution path depends on harness capabilities:**
 
