@@ -11,6 +11,8 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
+**Output constraint:** When presenting the plan, code examples, or any large generated content to the user, split it into sequential chunks of no more than 200 lines per message.
+
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
 <HARD-GATE>
@@ -35,6 +37,8 @@ Never wait for bare text responses (e.g., "ok", "continue", "yes"). If the user 
 **Execution Flow (Non-blocking)**
 
 This skill shall not stop and wait for bare text confirmation at each step during execution. The agent shall continue to advance according to the process; interactive pauses shall only be initiated when user decision, confirmation, or input is genuinely required. All such pauses must be implemented via `vscode/askQuestions` (or an equivalent tool specified in the documentation) - after the tool is used to display a selection or input interface, the agent may resume executing subsequent steps upon receiving the user's response. Do not use modes that rely solely on textual prompts such as "Please continue" or passive waiting.
+
+When delivering long plan content, present it in ordered segments rather than one large dump. Each segment must stay within the 200-line limit.
 
 **Context:** This should be run in a dedicated worktree (created by brainstorming skill).
 
@@ -133,6 +137,7 @@ git commit -m "feat: add specific feature"
 - Complete code in plan (not "add validation")
 - Exact commands with expected output
 - Reference relevant skills with @ syntax
+- Split long plan output into sequential sections, each no more than 200 lines
 - DRY, YAGNI, TDD, frequent commits
 
 ## Plan Review Loop

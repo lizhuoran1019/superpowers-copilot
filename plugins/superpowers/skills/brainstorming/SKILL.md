@@ -9,6 +9,8 @@ Help turn ideas into fully formed designs and specs through natural collaborativ
 
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
 
+**Output constraint:** When presenting designs, examples, diagrams as text, or any other large generated content to the user, split it into sequential chunks of no more than 200 lines per message.
+
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
@@ -35,6 +37,8 @@ Never wait for bare text responses (e.g., “ok”, “continue”, “yes”). 
 **Execution Flow (Non-blocking)**
 
 This skill shall not stop and wait for bare text confirmation at each step during execution. The agent shall continue to advance according to the process; interactive pauses shall only be initiated when user decision, confirmation, or input is genuinely required. All such pauses must be implemented via `vscode/askQuestions` (or an equivalent tool specified in the documentation) — after the tool is used to display a selection or input interface, the agent may resume executing subsequent steps upon receiving the user's response. Do not use modes that rely solely on textual prompts such as "Please continue" or passive waiting.
+
+When delivering long design content, present it in ordered segments rather than one large dump. Each segment must stay within the 200-line limit.
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
@@ -113,6 +117,7 @@ digraph brainstorming {
 
 - Once you believe you understand what you're building, present the design
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
+- If the design content becomes long, split it into consecutive sections so each user-facing output stays within 200 lines
 - Ask after each section whether it looks right so far via `vscode/askQuestions` (e.g., “Looks good — continue”, “Needs changes”, “Unsure — ask a clarifying question”)
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
@@ -170,6 +175,7 @@ Only proceed once the user selects an approval option in `vscode/askQuestions`. 
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design, get approval before moving on
+- **Bound output size** - Split long user-facing design output into chunks of no more than 200 lines
 - **Be flexible** - Go back and clarify when something doesn't make sense
 
 ## Visual Companion
