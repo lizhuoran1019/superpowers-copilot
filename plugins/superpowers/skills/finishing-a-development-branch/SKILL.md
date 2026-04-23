@@ -16,7 +16,7 @@ Guide completion of development work by presenting clear options and handling ch
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool for all user-facing decisions and confirmations.** Present structured options rather than freeform prompts.
+**Use the `askQuestions` tool for all user-facing decisions and confirmations.** Present structured options rather than freeform prompts.
 
 For each interaction:
 - Use askQuestions to present 2-4 options

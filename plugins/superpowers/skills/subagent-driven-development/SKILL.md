@@ -14,7 +14,7 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool whenever task execution requires a user decision, clarification, or consent.** Do not rely on plain text prompts.
+**Use the `askQuestions` tool whenever task execution requires a user decision, clarification, or consent.** Do not rely on plain text prompts.
 
 For each interaction:
 - Use askQuestions to present 2-4 options

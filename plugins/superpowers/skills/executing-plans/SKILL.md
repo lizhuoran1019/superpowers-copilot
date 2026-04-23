@@ -18,7 +18,7 @@ Load plan, review critically, execute all tasks end-to-end, report when complete
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool whenever execution requires a user decision, clarification, confirmation, approval, or consent.** Do not rely on bare text prompts.
+**Use the `askQuestions` tool whenever execution requires a user decision, clarification, confirmation, approval, or consent.** Do not rely on bare text prompts.
 
 For each interaction:
 - Use askQuestions to present 2-4 options
@@ -32,19 +32,19 @@ This applies to ALL interactive pauses, including:
 - Main/master branch consent
 - Any proceed / continue / stop / revise / approve decision
 
-Never wait for bare text responses such as "ok", "continue", or "yes". If the user replies in freeform text anyway, immediately follow up with `#vscode/askQuestions` to collect an explicit choice before proceeding.
+Never wait for bare text responses such as "ok", "continue", or "yes". If the user replies in freeform text anyway, immediately follow up with `askQuestions` to collect an explicit choice before proceeding.
 </HARD-GATE>
 
 **Execution Flow (Non-blocking)**
 
-Do not pause for plain-text confirmation. Do not ask whether to continue between tasks. Only stop when a real user decision is required, and implement that pause via `#vscode/askQuestions`.
+Do not pause for plain-text confirmation. Do not ask whether to continue between tasks. Only stop when a real user decision is required, and implement that pause via `askQuestions`.
 
 ## The Process
 
 ### Step 1: Load and Review Plan
 1. Read plan file
 2. Review critically - identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting, using `#vscode/askQuestions` when a decision or approval is required
+3. If concerns: Raise them with your human partner before starting, using `askQuestions` when a decision or approval is required
 4. If no concerns: Create TodoWrite and proceed
 
 ### Step 2: Execute Tasks
@@ -74,7 +74,7 @@ After all tasks complete and verified:
 
 Do not stop for routine progress updates or to ask whether the human wants you to keep going.
 
-**Ask for clarification rather than guessing.** Use `#vscode/askQuestions` if the blocker requires a user decision.
+**Ask for clarification rather than guessing.** Use `askQuestions` if the blocker requires a user decision.
 
 ## When to Revisit Earlier Steps
 
@@ -94,7 +94,7 @@ Do not stop for routine progress updates or to ask whether the human wants you t
 - Don't skip verifications
 - Reference skills when plan says to
 - Stop when blocked, don't guess
-- Never start implementation on main/master branch without explicit user consent collected via `#vscode/askQuestions`
+- Never start implementation on main/master branch without explicit user consent collected via `askQuestions`
 
 ## Integration
 

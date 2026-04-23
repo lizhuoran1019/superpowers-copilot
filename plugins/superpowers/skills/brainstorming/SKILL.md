@@ -18,7 +18,7 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool to ask the user questions.** Present a carousel UI rather than plain text options.
+**Use the `askQuestions` tool to ask the user questions.** Present a carousel UI rather than plain text options.
 
 For each question:
 - Use askQuestions to present 2-4 options

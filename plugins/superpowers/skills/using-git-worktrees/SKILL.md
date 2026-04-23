@@ -16,7 +16,7 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool for any user decision, confirmation, or consent.** Present structured choices rather than bare text prompts.
+**Use the `askQuestions` tool for any user decision, confirmation, or consent.** Present structured choices rather than bare text prompts.
 
 For each interaction:
 - Use askQuestions to present 2-4 options

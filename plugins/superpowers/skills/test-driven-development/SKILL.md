@@ -16,7 +16,7 @@ Write the test first. Watch it fail. Write minimal code to pass.
 <HARD-GATE>
 ## User Interaction
 
-**Use the `#vscode/askQuestions` tool whenever you need a human decision about deviating from TDD.** Do not rely on bare text prompts.
+**Use the `askQuestions` tool whenever you need a human decision about deviating from TDD.** Do not rely on bare text prompts.
 
 For each interaction:
 - Use askQuestions to present 2-4 options
